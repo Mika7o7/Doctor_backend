@@ -1,0 +1,100 @@
+[tool.poetry]
+name = "my_doctor"
+version = "0.1.0"
+description = ""
+authors = ["Rafayel Gasparyan <rafayelgasparyan04@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Django = "3.2"
+Pillow = "^9.2.0"
+djangorestframework = "^3.14.0"
+django-cleanup = "^6.0.0"
+django-resized = "^1.0.2"
+drf-yasg = "^1.21.4"
+django-ckeditor = "^6.5.1"
+django-modeltranslation = "^0.18.5"
+django-baton = "^2.4.1"
+dj-static = "^0.0.6"
+django-redis = "^5.2.0"
+psycopg2-binary = "^2.9.4"
+python-environ = "^0.4.54"
+django-cors-headers = "^3.13.0"
+requests = "^2.28.1"
+channels = "^4.0.0"
+celery = "^5.2.7"
+redis = "^4.3.4"
+django-celery-results = "^2.4.0"
+ipython = "^8.6.0"
+daphne = "^4.0.0"
+channels-redis = "^4.0.0"
+PyYAML = "^6.0"
+sentry-sdk = "^1.12.1"
+bigbluebutton2 = "^0.1a10"
+bigbluebutton-api-python = "^0.0.11"
+django-ckeditor-5 = "^0.2.2"
+
+[tool.poetry.dev-dependencies]
+black = "^22.10.0"
+flake8 = "^5.0.4"
+poethepoet = "^0.16.4"
+mypy = "^0.982"
+types-requests = "^2.28.11"
+bandit = "^1.7.4"
+isort = "^5.10.1"
+autoflake = "^1.7.7"
+pytest-django = "^4.5.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 80
+target_version = ['py310']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.pytest_cache
+  | \.venv
+  | \.vscode
+  | migrations
+)
+'''
+
+[tool.isort]
+profile = 'black'
+
+
+[tool.poe.tasks]
+lint-flake8 = "flake8"
+lint-black = "black . --check"
+lint-mypy = "mypy -p api -p my_doctor --exclude mogrations --show-error-codes --ignore-missing-imports"
+lint-bandit = "bandit -c bandit.yaml -r api my_doctor sockets blog chat evants tests"
+lint = [
+    {cmd = "black . --check"},
+    {cmd = "flake8"},
+    {cmd = "mypy -p api -p my_doctor --exclude mogrations --show-error-codes --ignore-missing-imports"},
+    {cmd = "bandit -c bandit.yaml -r api my_doctor sockets blog chat evants tests"}
+]
+fix-black = "black ."
+fix-isort = "isort api my_doctor sockets blog chat evants tests"
+fix-autoflake = "autoflake --recursive --in-place --remove-unused-variables --remove-all-unused-imports api my_doctor sockets blog chat evants tests"
+fix = [
+    {cmd = "autoflake --recursive --in-place --remove-unused-variables --remove-all-unused-imports api my_doctor sockets blog chat evants tests"},
+    {cmd = "isort api my_doctor sockets blog chat evants tests"},
+    {cmd = "black ."}
+]
+run = "python manage.py runserver 0.0.0.0:8000 --settings=my_doctor.settings.settings"
+run_admin = "python manage.py runserver 0.0.0.0:3200 --settings=my_doctor.settings.settings_admin"
+migrate = [
+    {cmd = "python manage.py makemigrations --settings=my_doctor.settings.settings"},
+    {cmd = "python manage.py migrate --settings=my_doctor.settings.settings"}
+]
+migrate_admin = [
+    {cmd = "python manage.py makemigrations --settings=my_doctor.settings.settings_admin"},
+    {cmd = "python manage.py migrate --settings=my_doctor.settings.settings_admin"}
+]
+create_admin = "python manage.py createsuperuser --settings=my_doctor.settings.settings"
